@@ -44,3 +44,4 @@ Representante "1" -- "*" Campanha : cria
 BancoDeSangue "1" -- "1" Hospital : pertence a
 
 @enduml
+
