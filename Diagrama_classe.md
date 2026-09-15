@@ -37,11 +37,11 @@ class "Banco de Sangue" as BancoDeSangue {
     - quantidadeDeSangue : int
 }
 
-Doador "1" -- "*" Hospital : doa para
+Doador "1" -- "*" Hospital : doa 
 Doador "1" -- "*" Campanha : participa
 Representante "1" -- "1" Hospital : representa
 Representante "1" -- "*" Campanha : cria
-BancoDeSangue "1" -- "1" Hospital : pertence a
+BancoDeSangue "1" -- "1" Hospital : pertence 
 
 @enduml
 
