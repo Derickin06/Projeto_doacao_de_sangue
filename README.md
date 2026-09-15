@@ -140,3 +140,33 @@ flowchart TB
     class DoadorApp,RepresentanteApp,Sistema,APIREST,Database artifact
     class Backend,API component
 ```
+
+# Diagrama de casos de Uso
+
+```mermaid
+flowchart LR
+
+    Doador["Doador"]
+    Representante["Representante do Hospital"]
+
+    subgraph Sistema["Sistema de Doação de Sangue"]
+
+        UC01(["UC01 - Visualizar e Selecionar Hospital"])
+        UC02(["UC02 - Atualizar Informações do Hospital"])
+        UC03(["UC03 - Visualizar Campanha"])
+        UC04(["UC04 - Criar Campanha"])
+        UC05(["UC05 - Doação Direta de Banco de Sangue"])
+
+    end
+
+    Doador --> UC01
+    Doador --> UC03
+
+    Representante --> UC02
+    Representante --> UC03
+    Representante --> UC04
+    Representante --> UC05
+
+    UC04 -.->|<<include>>| UC02
+```
+
