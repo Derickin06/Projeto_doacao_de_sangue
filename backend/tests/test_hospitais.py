@@ -1,4 +1,4 @@
-"""UC02 — Atualizar informações do hospital."""
+"""Atualizar informações do hospital."""
 
 SE = (-23.5503, -46.6339)  # coordenadas aproximadas da Sé, São Paulo
 

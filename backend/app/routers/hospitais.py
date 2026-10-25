@@ -1,4 +1,4 @@
-"""UC02 — Atualizar informações do hospital (horários, estoque, exceções)."""
+"""Atualizar informações do hospital (horários, estoque, exceções)."""
 
 from fastapi import APIRouter, HTTPException
 
