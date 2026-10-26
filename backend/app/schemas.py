@@ -1,9 +1,10 @@
 """Formatos de entrada e saída da API (validação com Pydantic)."""
 
 import re
+from datetime import date
 from typing import Annotated
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 
 from .services.compatibilidade import normalizar_tipo
 
@@ -105,3 +106,50 @@ class RepresentanteOut(_ORM):
     nome: str
     email: str
     hospital: HospitalDetalhe | None
+
+
+# ------------------------------------------------------------------- campanha
+class CampanhaCriar(BaseModel):
+    nome: str = Field(min_length=3, max_length=150)
+    descricao: str | None = None
+    data_inicio: date
+    data_fim: date
+    # Se omitidos, usa os dados do hospital do representante (UC04 inclui UC02)
+    endereco: str | None = Field(default=None, min_length=5, max_length=255)
+    latitude: Latitude | None = None
+    longitude: Longitude | None = None
+    tipos_necessarios: list[TipoSanguineo] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _datas_validas(self):
+        if self.data_fim < self.data_inicio:
+            raise ValueError("data_fim não pode ser anterior a data_inicio.")
+        # remove duplicados mantendo a ordem
+        self.tipos_necessarios = list(dict.fromkeys(self.tipos_necessarios))
+        return self
+
+
+class CampanhaModelo(BaseModel):
+    """Formulário pré-preenchido com os dados do hospital (UC04)."""
+
+    hospital_id: int
+    hospital_nome: str
+    endereco: str
+    latitude: float | None
+    longitude: float | None
+    tipos_necessarios: list[str]
+
+
+class CampanhaOut(BaseModel):
+    id: int
+    nome: str
+    descricao: str | None
+    data_inicio: date
+    data_fim: date
+    endereco: str
+    latitude: float | None
+    longitude: float | None
+    tipos_necessarios: list[str]
+    hospital_id: int
+    hospital_nome: str
+    ativa: bool
