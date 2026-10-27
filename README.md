@@ -8,6 +8,11 @@ Link Google Sheets: https://docs.google.com/spreadsheets/d/1bja-UOTeAVHtsSLmCIZy
 
 Link Figma: https://www.figma.com/make/pD13GNYTOk4aVPxW0MsAe0/Doa%C3%A7%C3%A3o-de-Sangue-App?t=81aICpOhMsjMJMW5-20&fullscreen=1
 
+## Implementação
+
+- [`backend/`](backend/README.md) — API REST em Python (FastAPI) + MySQL, cobrindo os casos de uso UC02 (atualizar informações do hospital), UC03 (visualizar campanhas) e UC04 (criar campanha).
+  Para rodar: `cd backend && docker compose up --build` e abra http://localhost:8000/docs
+
 
 ## Diagrama de Classes
 
@@ -169,4 +174,3 @@ flowchart LR
 
     UC04 -.->|<<include>>| UC02
 ```
-

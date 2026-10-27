@@ -1,0 +1,34 @@
+# Sobe MySQL + API:  docker compose up --build
+# API: http://localhost:8000/docs
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: doacao_sangue
+      MYSQL_USER: doacao
+      MYSQL_PASSWORD: doacao
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_dados:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: .
+    environment:
+      DATABASE_URL: mysql+pymysql://doacao:doacao@db:3306/doacao_sangue
+      JWT_SECRET: ${JWT_SECRET:-chave-de-desenvolvimento-troque-em-producao}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_dados:
