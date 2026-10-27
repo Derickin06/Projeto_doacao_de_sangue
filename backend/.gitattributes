@@ -1,0 +1,2 @@
+# Scripts que rodam no Linux (EC2) precisam de quebra de linha LF, mesmo vindos do Windows
+*.sh text eol=lf

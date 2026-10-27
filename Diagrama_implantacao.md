@@ -16,10 +16,17 @@ node "Dispositivo do Representante" as RepresentanteDevice {
 
 
 ' =========================
+' AWS ACADEMY (LEARNER LAB)
+' =========================
+
+cloud "AWS Academy - Learner Lab" as AWS {
+node "Instância EC2 - Ubuntu 24.04 + Docker" as EC2 {
+
+' =========================
 ' SERVIDOR DE APLICAÇÃO
 ' =========================
 
-node "Servidor de Aplicação" as AppServer {
+node "Servidor de Aplicação - Python (FastAPI)" as AppServer <<container>> {
 
     node "Backend" as Backend {
         artifact "Sistema de Doação de Sangue" as SistemaPython
@@ -35,8 +42,11 @@ node "Servidor de Aplicação" as AppServer {
 ' BANCO DE DADOS
 ' =========================
 
-database "MySQL" as MySQL {
+database "MySQL 8.4" as MySQL <<container>> {
     artifact "Banco de Dados\nSistema de Doação de Sangue" as Database
+}
+
+}
 }
 
 
@@ -44,8 +54,8 @@ database "MySQL" as MySQL {
 ' CONEXÕES
 ' =========================
 
-DoadorApp --> APIREST : HTTPS
-RepresentanteApp --> APIREST : HTTPS
+DoadorApp --> APIREST : HTTP (porta 80)
+RepresentanteApp --> APIREST : HTTP (porta 80)
 
 APIREST --> Backend : Requisições internas
 

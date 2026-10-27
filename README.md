@@ -11,7 +11,11 @@ Link Figma: https://www.figma.com/make/pD13GNYTOk4aVPxW0MsAe0/Doa%C3%A7%C3%A3o-d
 ## Implementação
 
 - [`backend/`](backend/README.md) — API REST em Python (FastAPI) + MySQL, cobrindo os casos de uso UC02 (atualizar informações do hospital), UC03 (visualizar campanhas) e UC04 (criar campanha).
-  Para rodar: `cd backend && docker compose up --build` e abra http://localhost:8000/docs
+  - **No computador:** `cd backend && docker compose up -d --build` e abra http://localhost:8000/docs
+    (ou rode com Python + SQLite, sem Docker — veja o [README do backend](backend/README.md#rodar-no-computador)).
+  - **Na nuvem:** hospedado numa EC2 do AWS Academy (Learner Lab), instalada pelo script
+    [`backend/deploy/aws/instalar.sh`](backend/deploy/aws/instalar.sh) — passo a passo em
+    [Publicar no AWS Academy](backend/README.md#publicar-no-aws-academy-learner-lab).
 
 
 ## Diagrama de Classes
@@ -81,10 +85,17 @@ flowchart TB
 
 
     %% =========================
+    %% AWS ACADEMY (LEARNER LAB)
+    %% =========================
+
+    subgraph AWS["<<cloud>> AWS Academy - Learner Lab"]
+    subgraph EC2["<<node>> Instância EC2 - Ubuntu 24.04 + Docker"]
+
+    %% =========================
     %% SERVIDOR DE APLICAÇÃO
     %% =========================
 
-    subgraph AppServer["<<node>> Servidor de Aplicação - Python"]
+    subgraph AppServer["<<container>> Servidor de Aplicação - Python (FastAPI)"]
 
         Backend["<<component>>\nBackend\n(Python)"]
         Sistema["<<artifact>>\nSistema de Doação de Sangue"]
@@ -103,8 +114,11 @@ flowchart TB
     %% BANCO DE DADOS
     %% =========================
 
-    subgraph MySQL["<<database>> MySQL"]
+    subgraph MySQL["<<container>> MySQL 8.4"]
         Database["<<artifact>>\nBanco de Dados\nSistema de Doação de Sangue"]
+    end
+
+    end
     end
 
 
@@ -112,8 +126,8 @@ flowchart TB
     %% CONEXÕES
     %% =========================
 
-    DoadorApp -->|HTTPS| APIREST
-    RepresentanteApp -->|HTTPS| APIREST
+    DoadorApp -->|HTTP - porta 80| APIREST
+    RepresentanteApp -->|HTTP - porta 80| APIREST
 
     Backend -->|SQL| Database
 
@@ -132,6 +146,8 @@ flowchart TB
     class Doador,Representante device
     class AppServer server
     class MySQL database
+    class AWS cloud
+    class EC2 server
     class DoadorApp,RepresentanteApp,Sistema,APIREST,Database artifact
     class Backend,API component
 ```

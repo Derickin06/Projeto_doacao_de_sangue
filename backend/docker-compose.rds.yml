@@ -1,0 +1,17 @@
+# Variante para usar o Amazon RDS (MySQL gerenciado) no lugar do MySQL em container.
+#
+#   docker compose -f docker-compose.rds.yml up -d --build
+#
+# O .env desta pasta precisa ter o DATABASE_URL apontando para o RDS, ex.:
+#   DATABASE_URL=mysql+pymysql://admin:SENHA@meu-banco.xxxxx.us-east-1.rds.amazonaws.com:3306/doacao_sangue
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?defina DATABASE_URL no .env apontando para o RDS}
+      JWT_SECRET: ${JWT_SECRET:-chave-de-desenvolvimento-troque-em-producao}
+      JWT_EXPIRA_MINUTOS: ${JWT_EXPIRA_MINUTOS:-720}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+    ports:
+      - "${API_PORT:-8000}:8000"
