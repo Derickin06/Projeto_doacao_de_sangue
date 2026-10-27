@@ -23,7 +23,6 @@ services:
     environment:
       DATABASE_URL: mysql+pymysql://doacao:doacao@db:3306/doacao_sangue
       JWT_SECRET: ${JWT_SECRET:-chave-de-desenvolvimento-troque-em-producao}
-      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
     ports:
       - "8000:8000"
     depends_on:

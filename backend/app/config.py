@@ -28,9 +28,6 @@ class Settings:
     jwt_expira_minutos: int = field(
         default_factory=lambda: int(os.getenv("JWT_EXPIRA_MINUTOS", "720"))
     )
-    google_maps_api_key: str | None = field(
-        default_factory=lambda: os.getenv("GOOGLE_MAPS_API_KEY") or None
-    )
     cors_origins: list[str] = field(
         default_factory=lambda: _lista(os.getenv("CORS_ORIGINS", "*"))
     )

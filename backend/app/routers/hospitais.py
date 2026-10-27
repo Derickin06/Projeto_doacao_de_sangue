@@ -1,11 +1,10 @@
-"""Atualizar informações do hospital (horários, estoque, exceções)."""
+"""UC02 — Atualizar informações do hospital (horários, estoque, exceções)."""
 
 from fastapi import APIRouter, HTTPException
 
 from ..deps import DB, HospitalDoRepresentante
 from ..models import EstoqueSangue
 from ..schemas import EstoqueItem, HospitalAtualizar, HospitalDetalhe
-from ..services.geo import geocodificar
 
 router = APIRouter(prefix="/hospitais", tags=["Hospitais"])
 
@@ -24,12 +23,6 @@ def atualizar_meu_hospital(dados: HospitalAtualizar, hospital: HospitalDoReprese
         if campo in {"nome", "endereco"} and valor is None:
             raise HTTPException(422, f"{campo} não pode ser vazio.")
         setattr(hospital, campo, valor)
-
-    endereco_mudou = "endereco" in alteracoes
-    coords_enviadas = "latitude" in alteracoes or "longitude" in alteracoes
-    if endereco_mudou and not coords_enviadas:
-        coords = geocodificar(hospital.endereco)
-        hospital.latitude, hospital.longitude = coords if coords else (None, None)
 
     db.commit()
     db.refresh(hospital)

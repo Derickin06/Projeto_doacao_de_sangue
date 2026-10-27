@@ -1,11 +1,9 @@
-"""Atualizar informações do hospital."""
-
-SE = (-23.5503, -46.6339)  # coordenadas aproximadas da Sé, São Paulo
+"""UC02 — Atualizar informações do hospital."""
 
 
 def test_estoque_e_tipos_em_falta(client, criar_representante):
     headers, _ = criar_representante(
-        "a@h.com", "Hospital A", *SE,
+        "a@h.com", "Hospital A",
         estoque=[
             {"tipo_sanguineo": "O-", "quantidade": 3, "quantidade_minima": 10},
             {"tipo_sanguineo": "A+", "quantidade": 20, "quantidade_minima": 10},
@@ -24,7 +22,7 @@ def test_estoque_e_tipos_em_falta(client, criar_representante):
 
 
 def test_atualizar_informacoes_do_hospital(client, criar_representante):
-    headers, hospital = criar_representante("a@h.com", "Hospital A", *SE)
+    headers, hospital = criar_representante("a@h.com", "Hospital A")
     r = client.put(
         "/hospitais/me",
         json={"horario_funcionamento": "24 horas", "observacoes": "Fechado em 15/11"},
@@ -35,14 +33,13 @@ def test_atualizar_informacoes_do_hospital(client, criar_representante):
     assert r.json()["observacoes"] == "Fechado em 15/11"
     # campos não enviados não mudam
     assert r.json()["nome"] == "Hospital A"
-    assert r.json()["latitude"] == SE[0]
 
     r = client.get("/hospitais/me", headers=headers)
     assert r.json()["horario_funcionamento"] == "24 horas"
 
 
 def test_atualizar_estoque(client, criar_representante):
-    headers, _ = criar_representante("a@h.com", "Hospital A", *SE)
+    headers, _ = criar_representante("a@h.com", "Hospital A")
     r = client.put(
         "/hospitais/me/estoque",
         json=[{"tipo_sanguineo": "a-", "quantidade": 4, "quantidade_minima": 6}],
@@ -86,8 +83,8 @@ def test_rotas_de_representante_protegidas(client):
 
 
 def test_cada_representante_edita_so_o_proprio_hospital(client, criar_representante):
-    headers_a, _ = criar_representante("a@h.com", "Hospital A", *SE)
-    headers_b, _ = criar_representante("b@h.com", "Hospital B", *SE)
+    headers_a, _ = criar_representante("a@h.com", "Hospital A")
+    headers_b, _ = criar_representante("b@h.com", "Hospital B")
     client.put("/hospitais/me", json={"telefone": "(11) 1111-1111"}, headers=headers_a)
     assert client.get("/hospitais/me", headers=headers_b).json()["telefone"] is None
     assert client.get("/hospitais/me", headers=headers_a).json()["telefone"] == "(11) 1111-1111"

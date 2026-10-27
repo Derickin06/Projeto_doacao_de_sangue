@@ -109,13 +109,6 @@ flowchart TB
 
 
     %% =========================
-    %% SERVIÇO EXTERNO
-    %% =========================
-
-    GoogleMaps["<<cloud>>\nGoogle Maps"]
-
-
-    %% =========================
     %% CONEXÕES
     %% =========================
 
@@ -123,8 +116,6 @@ flowchart TB
     RepresentanteApp -->|HTTPS| APIREST
 
     Backend -->|SQL| Database
-
-    Backend -->|HTTPS / Maps API| GoogleMaps
 
 
     %% =========================
@@ -141,7 +132,6 @@ flowchart TB
     class Doador,Representante device
     class AppServer server
     class MySQL database
-    class GoogleMaps cloud
     class DoadorApp,RepresentanteApp,Sistema,APIREST,Database artifact
     class Backend,API component
 ```

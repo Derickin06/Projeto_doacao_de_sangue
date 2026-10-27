@@ -41,13 +41,6 @@ database "MySQL" as MySQL {
 
 
 ' =========================
-' SERVIÇO EXTERNO
-' =========================
-
-cloud "Google Maps" as GoogleMaps
-
-
-' =========================
 ' CONEXÕES
 ' =========================
 
@@ -57,8 +50,6 @@ RepresentanteApp --> APIREST : HTTPS
 APIREST --> Backend : Requisições internas
 
 Backend --> MySQL : SQL
-
-Backend --> GoogleMaps : HTTPS / Maps API
 
 @enduml
 

@@ -11,7 +11,6 @@ from ..deps import DB, RepresentanteAtual
 from ..models import Hospital, Representante
 from ..schemas import LoginEntrada, RepresentanteCriar, RepresentanteOut, Token
 from ..security import criar_token, hash_senha, verificar_senha
-from ..services.geo import geocodificar
 
 router = APIRouter(prefix="/auth", tags=["Autenticação"])
 
@@ -25,10 +24,6 @@ def cadastrar_representante(dados: RepresentanteCriar, db: DB):
         raise HTTPException(status.HTTP_409_CONFLICT, "E-mail já cadastrado.")
 
     hospital = Hospital(**dados.hospital.model_dump())
-    if hospital.latitude is None or hospital.longitude is None:
-        coords = geocodificar(hospital.endereco)
-        if coords:
-            hospital.latitude, hospital.longitude = coords
 
     rep = Representante(
         nome=dados.nome, email=dados.email, senha_hash=hash_senha(dados.senha)

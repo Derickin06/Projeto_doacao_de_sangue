@@ -50,7 +50,7 @@ def _login(client: TestClient, email: str, senha: str = "senha123") -> dict:
 def criar_representante(client):
     """Cria representante + hospital e devolve (headers de auth, dados do hospital)."""
 
-    def _criar(email: str, nome_hospital: str, lat: float, lng: float, estoque=None):
+    def _criar(email: str, nome_hospital: str, estoque=None):
         r = client.post(
             "/auth/representantes",
             json={
@@ -61,8 +61,6 @@ def criar_representante(client):
                     "nome": nome_hospital,
                     "endereco": f"Rua do {nome_hospital}, 100 - São Paulo",
                     "horario_funcionamento": "Seg a Sex, 8h às 17h",
-                    "latitude": lat,
-                    "longitude": lng,
                 },
             },
         )

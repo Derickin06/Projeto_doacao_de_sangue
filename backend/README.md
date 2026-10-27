@@ -1,8 +1,7 @@
 # Backend — API REST (FastAPI + MySQL)
 
 Implementação do "Servidor de Aplicação" do diagrama de implantação: uma API REST em
-Python que o app (web/mobile) consome via HTTPS, com MySQL como banco de dados e o
-Google Maps para converter endereços em coordenadas.
+Python que o app (web/mobile) consome via HTTPS, com MySQL como banco de dados.
 
 **Escopo:** UC02 (atualizar informações do hospital), UC03 (visualizar campanhas) e
 UC04 (criar campanha). UC01 (visualizar e selecionar hospital) e UC05 (doação direta)
@@ -59,8 +58,7 @@ backend/
 │   ├── deps.py              # representante logado e o hospital dele
 │   ├── routers/             # uma rota por grupo de casos de uso
 │   └── services/
-│       ├── compatibilidade.py   # tipos sanguíneos e regra ABO/Rh (port do TipoSangue.java)
-│       └── geo.py               # Google Maps (endereço → coordenadas)
+│       └── compatibilidade.py   # tipos sanguíneos e regra ABO/Rh (port do TipoSangue.java)
 ├── scripts/seed.py          # dados de exemplo
 └── tests/                   # pytest
 ```
@@ -96,9 +94,9 @@ representante não informar endereço ou tipos necessários, a campanha usa os d
 
 - `BancoDeSangue` virou a tabela `banco_de_sangue`, com **uma linha por tipo sanguíneo**
   de cada hospital, mais `quantidade_minima` (usada para calcular a necessidade).
-- `Hospital` ganhou `telefone`, `horario_funcionamento`, `observacoes` (exceções) e
-  `latitude`/`longitude` (dados que o UC02 atualiza).
-- `Campanha` guarda o `hospital_id`, a lista de tipos necessários e as coordenadas.
+- `Hospital` ganhou `telefone`, `horario_funcionamento` e `observacoes` (exceções),
+  que são os dados que o UC02 atualiza.
+- `Campanha` guarda o `hospital_id` e a lista de tipos sanguíneos necessários.
 - O Representante tem senha (guardada com hash PBKDF2) para o login.
 - `Doador` não virou tabela: no escopo atual ele só visualiza campanhas, o que é público.
   Entra no banco quando UC01/UC05 (ou a participação em campanhas) forem implementados.

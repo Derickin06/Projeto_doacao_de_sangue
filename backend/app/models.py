@@ -9,7 +9,7 @@ hospital) e Campanha. O Doador só visualiza campanhas, o que não exige cadastr
 from datetime import date, datetime, timezone
 from typing import Optional
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -42,8 +42,6 @@ class Hospital(Base):
     horario_funcionamento: Mapped[str | None] = mapped_column(String(255), default=None)
     # Exceções de funcionamento, avisos (ex.: "fechado no feriado de 15/11")
     observacoes: Mapped[str | None] = mapped_column(Text, default=None)
-    latitude: Mapped[float | None] = mapped_column(Float, default=None)
-    longitude: Mapped[float | None] = mapped_column(Float, default=None)
     representante_id: Mapped[int | None] = mapped_column(
         ForeignKey("representantes.id"), unique=True, default=None
     )
@@ -99,8 +97,6 @@ class Campanha(Base):
     data_inicio: Mapped[date] = mapped_column(Date)
     data_fim: Mapped[date] = mapped_column(Date)
     endereco: Mapped[str] = mapped_column(String(255))
-    latitude: Mapped[float | None] = mapped_column(Float, default=None)
-    longitude: Mapped[float | None] = mapped_column(Float, default=None)
     # Lista separada por vírgula, ex.: "O-,A-"
     tipos_necessarios: Mapped[str] = mapped_column(String(40), default="")
     hospital_id: Mapped[int] = mapped_column(ForeignKey("hospitais.id"))

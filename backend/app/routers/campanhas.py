@@ -10,7 +10,6 @@ from sqlalchemy.orm import selectinload
 from ..deps import DB, HospitalDoRepresentante, RepresentanteAtual
 from ..models import Campanha
 from ..schemas import CampanhaCriar, CampanhaModelo, CampanhaOut
-from ..services.geo import geocodificar
 
 router = APIRouter(prefix="/campanhas", tags=["Campanhas"])
 
@@ -23,8 +22,6 @@ def _para_saida(c: Campanha) -> CampanhaOut:
         data_inicio=c.data_inicio,
         data_fim=c.data_fim,
         endereco=c.endereco,
-        latitude=c.latitude,
-        longitude=c.longitude,
         tipos_necessarios=c.lista_tipos_necessarios,
         hospital_id=c.hospital_id,
         hospital_nome=c.hospital.nome,
@@ -65,8 +62,6 @@ def modelo_de_campanha(hospital: HospitalDoRepresentante):
         hospital_id=hospital.id,
         hospital_nome=hospital.nome,
         endereco=hospital.endereco,
-        latitude=hospital.latitude,
-        longitude=hospital.longitude,
         tipos_necessarios=hospital.tipos_em_falta,
     )
 
@@ -79,14 +74,7 @@ def criar_campanha(
     if dados.data_fim < date.today():
         raise HTTPException(422, "A campanha não pode terminar no passado.")
 
-    if dados.endereco:
-        endereco = dados.endereco
-        lat, lng = dados.latitude, dados.longitude
-        if lat is None or lng is None:
-            lat, lng = geocodificar(endereco) or (None, None)
-    else:
-        endereco, lat, lng = hospital.endereco, hospital.latitude, hospital.longitude
-
+    endereco = dados.endereco or hospital.endereco
     tipos = dados.tipos_necessarios or hospital.tipos_em_falta
 
     campanha = Campanha(
@@ -95,8 +83,6 @@ def criar_campanha(
         data_inicio=dados.data_inicio,
         data_fim=dados.data_fim,
         endereco=endereco,
-        latitude=lat,
-        longitude=lng,
         tipos_necessarios=",".join(tipos),
         hospital=hospital,
         representante=rep,

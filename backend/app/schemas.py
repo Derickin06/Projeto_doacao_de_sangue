@@ -21,8 +21,6 @@ def _validar_email(valor: str) -> str:
 Email = Annotated[str, Field(max_length=255), AfterValidator(_validar_email)]
 TipoSanguineo = Annotated[str, AfterValidator(normalizar_tipo)]
 Senha = Annotated[str, Field(min_length=6, max_length=128)]
-Latitude = Annotated[float, Field(ge=-90, le=90)]
-Longitude = Annotated[float, Field(ge=-180, le=180)]
 
 
 class _ORM(BaseModel):
@@ -47,8 +45,6 @@ class HospitalBase(BaseModel):
     telefone: str | None = Field(default=None, max_length=30)
     horario_funcionamento: str | None = Field(default=None, max_length=255)
     observacoes: str | None = None
-    latitude: Latitude | None = None
-    longitude: Longitude | None = None
 
 
 class HospitalCriar(HospitalBase):
@@ -63,8 +59,6 @@ class HospitalAtualizar(BaseModel):
     telefone: str | None = Field(default=None, max_length=30)
     horario_funcionamento: str | None = Field(default=None, max_length=255)
     observacoes: str | None = None
-    latitude: Latitude | None = None
-    longitude: Longitude | None = None
 
 
 class EstoqueItem(BaseModel):
@@ -87,8 +81,6 @@ class HospitalDetalhe(_ORM):
     telefone: str | None
     horario_funcionamento: str | None
     observacoes: str | None
-    latitude: float | None
-    longitude: float | None
     tipos_em_falta: list[str]
     estoque: list[EstoqueOut]
 
@@ -116,8 +108,6 @@ class CampanhaCriar(BaseModel):
     data_fim: date
     # Se omitidos, usa os dados do hospital do representante (UC04 inclui UC02)
     endereco: str | None = Field(default=None, min_length=5, max_length=255)
-    latitude: Latitude | None = None
-    longitude: Longitude | None = None
     tipos_necessarios: list[TipoSanguineo] = Field(default_factory=list)
 
     @model_validator(mode="after")
@@ -135,8 +125,6 @@ class CampanhaModelo(BaseModel):
     hospital_id: int
     hospital_nome: str
     endereco: str
-    latitude: float | None
-    longitude: float | None
     tipos_necessarios: list[str]
 
 
@@ -147,8 +135,6 @@ class CampanhaOut(BaseModel):
     data_inicio: date
     data_fim: date
     endereco: str
-    latitude: float | None
-    longitude: float | None
     tipos_necessarios: list[str]
     hospital_id: int
     hospital_nome: str

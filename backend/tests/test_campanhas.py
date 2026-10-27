@@ -1,6 +1,5 @@
 """UC03 (visualizar campanhas) e UC04 (criar campanha)."""
 
-SE = (-23.5503, -46.6339)
 ESTOQUE = [
     {"tipo_sanguineo": "O-", "quantidade": 2, "quantidade_minima": 10},
     {"tipo_sanguineo": "A-", "quantidade": 5, "quantidade_minima": 8},
@@ -8,7 +7,7 @@ ESTOQUE = [
 
 
 def test_modelo_pre_carregado(client, criar_representante):
-    headers, hospital = criar_representante("a@h.com", "Hospital A", *SE, estoque=ESTOQUE)
+    headers, hospital = criar_representante("a@h.com", "Hospital A", estoque=ESTOQUE)
     r = client.get("/campanhas/modelo", headers=headers)
     assert r.status_code == 200
     modelo = r.json()
@@ -18,7 +17,7 @@ def test_modelo_pre_carregado(client, criar_representante):
 
 
 def test_criar_campanha_usa_dados_do_hospital(client, criar_representante, datas):
-    headers, hospital = criar_representante("a@h.com", "Hospital A", *SE, estoque=ESTOQUE)
+    headers, hospital = criar_representante("a@h.com", "Hospital A", estoque=ESTOQUE)
     r = client.post(
         "/campanhas",
         json={
@@ -31,14 +30,13 @@ def test_criar_campanha_usa_dados_do_hospital(client, criar_representante, datas
     assert r.status_code == 201, r.text
     c = r.json()
     assert c["endereco"] == hospital["endereco"]
-    assert c["latitude"] == SE[0]
     assert c["tipos_necessarios"] == ["O-", "A-"]
     assert c["hospital_nome"] == "Hospital A"
     assert c["ativa"] is True
 
 
 def test_criar_campanha_com_endereco_proprio(client, criar_representante, datas):
-    headers, _ = criar_representante("a@h.com", "Hospital A", *SE)
+    headers, _ = criar_representante("a@h.com", "Hospital A")
     r = client.post(
         "/campanhas",
         json={
@@ -46,8 +44,6 @@ def test_criar_campanha_com_endereco_proprio(client, criar_representante, datas)
             "data_inicio": datas["amanha"],
             "data_fim": datas["semana_que_vem"],
             "endereco": "Av. Paulista, 1000 - São Paulo",
-            "latitude": -23.5614,
-            "longitude": -46.6559,
             "tipos_necessarios": ["o-", "O-", "+b"],
         },
         headers=headers,
@@ -58,7 +54,7 @@ def test_criar_campanha_com_endereco_proprio(client, criar_representante, datas)
 
 
 def test_validacoes_de_datas(client, criar_representante, datas):
-    headers, _ = criar_representante("a@h.com", "Hospital A", *SE)
+    headers, _ = criar_representante("a@h.com", "Hospital A")
     r = client.post(
         "/campanhas",
         json={"nome": "Invertida", "data_inicio": datas["semana_que_vem"], "data_fim": datas["hoje"]},
@@ -82,7 +78,7 @@ def test_criar_campanha_exige_login(client, datas):
 
 
 def test_listar_e_detalhar_campanhas(client, criar_representante, datas):
-    headers_rep, hospital = criar_representante("a@h.com", "Hospital A", *SE)
+    headers_rep, hospital = criar_representante("a@h.com", "Hospital A")
     for nome, inicio in (("Segunda", datas["semana_que_vem"]), ("Primeira", datas["hoje"])):
         r = client.post(
             "/campanhas",

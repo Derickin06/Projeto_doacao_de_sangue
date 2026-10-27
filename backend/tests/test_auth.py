@@ -1,6 +1,3 @@
-SE = (-23.5503, -46.6339)
-
-
 def _cadastro(email="rep@hosp.com", senha="senha123"):
     return {
         "nome": "Mariana",
@@ -28,12 +25,12 @@ def test_cadastro_e_login_representante(client):
 
 
 def test_email_duplicado(client, criar_representante):
-    criar_representante("rep@hosp.com", "Hospital A", *SE)
+    criar_representante("rep@hosp.com", "Hospital A")
     assert client.post("/auth/representantes", json=_cadastro()).status_code == 409
 
 
 def test_login_senha_errada(client, criar_representante):
-    criar_representante("rep@hosp.com", "Hospital A", *SE)
+    criar_representante("rep@hosp.com", "Hospital A")
     r = client.post("/auth/login", json={"email": "rep@hosp.com", "senha": "errada"})
     assert r.status_code == 401
     r = client.post("/auth/login", json={"email": "ninguem@hosp.com", "senha": "senha123"})
