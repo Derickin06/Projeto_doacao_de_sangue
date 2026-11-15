@@ -1,7 +1,9 @@
 // UC02 — Atualizar informações do hospital (dados, horários, avisos e estoque).
+// Também lista as campanhas do hospital, com o atalho para o UC04 (criar campanha).
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { api } from '../api';
+import CampanhasDoHospital from '../components/CampanhasDoHospital';
 import { Carregando, Erro } from '../components/Estado';
 import { STATUS, statusDoEstoque, type Status } from '../estoque';
 import { TIPOS_SANGUINEOS, type Hospital } from '../types';
@@ -261,6 +263,8 @@ export default function PainelPage() {
         </div>
       )}
 
+      {/* UC04: campanhas do hospital e atalho para criar uma nova */}
+      <CampanhasDoHospital hospitalId={hospital.id} />
     </div>
   );
 }

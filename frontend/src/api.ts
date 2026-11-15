@@ -1,6 +1,14 @@
 // Cliente da API REST do backend (FastAPI).
 
-import type { Campanha, EstoqueItem, Hospital, HospitalAtualizar, Representante } from './types';
+import type {
+  Campanha,
+  CampanhaCriar,
+  CampanhaModelo,
+  EstoqueItem,
+  Hospital,
+  HospitalAtualizar,
+  Representante,
+} from './types';
 
 const BASE = (import.meta.env.VITE_API_URL ?? '/api').replace(/\/$/, '');
 const CHAVE_TOKEN = 'hemoconnect.token';
@@ -97,4 +105,9 @@ export const api = {
     request<Hospital>('/hospitais/me', { method: 'PUT', body: JSON.stringify(dados) }),
   atualizarEstoque: (itens: EstoqueItem[]) =>
     request<Hospital>('/hospitais/me/estoque', { method: 'PUT', body: JSON.stringify(itens) }),
+
+  // ------------------------------------------------------ UC04: criar campanha
+  modeloCampanha: () => request<CampanhaModelo>('/campanhas/modelo'),
+  criarCampanha: (dados: CampanhaCriar) =>
+    request<Campanha>('/campanhas', { method: 'POST', body: JSON.stringify(dados) }),
 };

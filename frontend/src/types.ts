@@ -54,3 +54,20 @@ export interface EstoqueItem {
   quantidade: number;
   quantidade_minima: number;
 }
+
+/** Formulário de nova campanha pré-preenchido com os dados do hospital (UC04). */
+export interface CampanhaModelo {
+  hospital_id: number;
+  hospital_nome: string;
+  endereco: string;
+  tipos_necessarios: string[];
+}
+
+export interface CampanhaCriar {
+  nome: string;
+  descricao: string | null;
+  data_inicio: string;
+  data_fim: string;
+  endereco: string | null; // vazio = endereço do hospital
+  tipos_necessarios: string[]; // vazio = tipos em falta no hospital
+}

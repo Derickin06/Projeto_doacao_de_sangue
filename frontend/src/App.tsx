@@ -5,6 +5,7 @@ import CampanhaDetalhe from './pages/CampanhaDetalhe';
 import CampanhasPage from './pages/CampanhasPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import NovaCampanhaPage from './pages/NovaCampanhaPage';
 import NaoEncontrada from './pages/NaoEncontrada';
 import PainelPage from './pages/PainelPage';
 import { lerRota, navegar, rotaAtual, useRota } from './router';
@@ -30,6 +31,7 @@ function Pagina({ rota }: { rota: string }) {
   if (secao === 'campanhas' && /^\d+$/.test(id)) return <CampanhaDetalhe id={Number(id)} />;
   if (secao === 'login') return logado ? <Redirecionar para="/painel" /> : <LoginPage />;
   if (secao === 'painel' && !id) return <Protegida><PainelPage /></Protegida>;
+  if (secao === 'painel' && id === 'nova-campanha') return <Protegida><NovaCampanhaPage /></Protegida>;
   return <NaoEncontrada />;
 }
 
