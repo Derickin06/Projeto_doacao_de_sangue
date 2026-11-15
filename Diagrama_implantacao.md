@@ -23,6 +23,15 @@ cloud "AWS Academy - Learner Lab" as AWS {
 node "Instância EC2 - Ubuntu 24.04 + Docker" as EC2 {
 
 ' =========================
+' SERVIDOR WEB (SITE)
+' =========================
+
+node "Servidor Web - nginx" as WebServer <<container>> {
+    artifact "Site React (HemoConnect)" as Site
+}
+
+
+' =========================
 ' SERVIDOR DE APLICAÇÃO
 ' =========================
 
@@ -54,8 +63,10 @@ database "MySQL 8.4" as MySQL <<container>> {
 ' CONEXÕES
 ' =========================
 
-DoadorApp --> APIREST : HTTP (porta 80)
-RepresentanteApp --> APIREST : HTTP (porta 80)
+DoadorApp --> Site : HTTP (porta 80)
+RepresentanteApp --> Site : HTTP (porta 80)
+
+Site --> APIREST : /api (proxy reverso)
 
 APIREST --> Backend : Requisições internas
 

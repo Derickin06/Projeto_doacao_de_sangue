@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Atualiza o backend na EC2 com a versão mais recente do GitHub e reinicia a API.
+# Atualiza o sistema na EC2 com a versão mais recente do GitHub e reinicia os containers.
 # Uso (conectado na instância):  sudo bash /opt/doacao-sangue/backend/deploy/aws/atualizar.sh
 set -euo pipefail
 
@@ -10,6 +10,6 @@ git -C "$DESTINO" fetch --depth 1 origin "$BRANCH"
 git -C "$DESTINO" checkout -B "$BRANCH" FETCH_HEAD
 
 cd "$DESTINO/backend"
-docker compose up -d --build
+docker compose up -d --build --remove-orphans
 docker compose ps
 echo "==> Atualizado para: $(git -C "$DESTINO" log -1 --format='%h %s')"

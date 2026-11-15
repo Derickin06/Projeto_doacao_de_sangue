@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Instala e sobe o backend numa instância EC2 Ubuntu (AWS Academy / Learner Lab).
+# Instala e sobe o sistema (MySQL + API + site) numa instância EC2 Ubuntu (AWS Academy / Learner Lab).
 #
 # Dois jeitos de usar:
 #
@@ -17,7 +17,8 @@ set -euo pipefail
 # ----------------------------------------------------------------- ajuste aqui
 REPO_URL="${REPO_URL:-https://github.com/Derickin06/Projeto_doacao_de_sangue.git}"
 BRANCH="${BRANCH:-main}"
-API_PORT="${API_PORT:-80}"          # 80 = acessa sem ":8000" no endereço
+WEB_PORT="${WEB_PORT:-80}"          # porta do site: 80 = abre sem porta no endereço
+API_PORT="${API_PORT:-8000}"        # acesso direto à API / Swagger (abra no security group se quiser)
 CARREGAR_EXEMPLOS="${CARREGAR_EXEMPLOS:-1}"   # 1 = cria hospitais/campanhas de exemplo
 # -----------------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 exec > >(tee -a "$LOG") 2>&1
 
-echo "==> $(date) — instalando backend de $REPO_URL (branch $BRANCH)"
+echo "==> $(date) — instalando de $REPO_URL (branch $BRANCH)"
 
 # 1. Pacotes: Docker, Docker Compose e Git
 export DEBIAN_FRONTEND=noninteractive
@@ -73,6 +74,7 @@ DB_PASSWORD=$(openssl rand -hex 16)
 DB_ROOT_PASSWORD=$(openssl rand -hex 16)
 JWT_SECRET=$(openssl rand -hex 32)
 JWT_EXPIRA_MINUTOS=720
+WEB_PORT=$WEB_PORT
 API_PORT=$API_PORT
 CORS_ORIGINS=*
 EOF
@@ -80,16 +82,23 @@ EOF
   echo "==> .env criado em $BACKEND/.env"
 fi
 
-# 5. Sobe MySQL + API
-cd "$BACKEND"
-docker compose up -d --build
+# Instalações antigas (só backend) usavam a porta 80 para a API: agora ela é do site
+if grep -qE '^API_PORT=80$' "$BACKEND/.env" && ! grep -qE '^WEB_PORT=' "$BACKEND/.env"; then
+  sed -i "s/^API_PORT=80$/API_PORT=$API_PORT/" "$BACKEND/.env"
+  echo "==> .env atualizado: site na porta $WEB_PORT, API na porta $API_PORT"
+fi
+grep -qE '^WEB_PORT=' "$BACKEND/.env" || echo "WEB_PORT=$WEB_PORT" >> "$BACKEND/.env"
 
-# 6. Espera a API responder
-PORTA=$(grep -E '^API_PORT=' .env | cut -d= -f2 || true)
-PORTA=${PORTA:-$API_PORT}
-echo "==> aguardando a API na porta $PORTA..."
+# 5. Sobe MySQL + API + site
+cd "$BACKEND"
+docker compose up -d --build --remove-orphans
+
+# 6. Espera o site e a API responderem (a API pelo proxy /api do site)
+PORTA=$(grep -E '^WEB_PORT=' .env | cut -d= -f2 || true)
+PORTA=${PORTA:-$WEB_PORT}
+echo "==> aguardando o site na porta $PORTA..."
 for _ in $(seq 1 60); do
-  if curl -fsS "http://localhost:$PORTA/" >/dev/null 2>&1; then
+  if curl -fsS "http://localhost:$PORTA/api/" >/dev/null 2>&1; then
     break
   fi
   sleep 5
@@ -101,4 +110,4 @@ if [ "$CARREGAR_EXEMPLOS" = "1" ]; then
 fi
 
 IP=$(curl -fsS -m 3 https://checkip.amazonaws.com 2>/dev/null || echo "IP_PUBLICO")
-echo "==> Pronto! Documentação da API: http://$IP$( [ "$PORTA" = 80 ] || echo ":$PORTA" )/docs"
+echo "==> Pronto! Site: http://$IP$( [ "$PORTA" = 80 ] || echo ":$PORTA" )/"

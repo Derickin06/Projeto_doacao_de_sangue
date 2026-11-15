@@ -10,12 +10,18 @@ Link Figma: https://www.figma.com/make/pD13GNYTOk4aVPxW0MsAe0/Doa%C3%A7%C3%A3o-d
 
 ## Implementação
 
+- [`frontend/`](frontend/README.md) — site em React + Vite feito a partir do protótipo do Figma, ligado à API:
+  campanhas para os doadores (UC03), login e painel do hospital (UC02) e criação de campanhas (UC04).
 - [`backend/`](backend/README.md) — API REST em Python (FastAPI) + MySQL, cobrindo os casos de uso UC02 (atualizar informações do hospital), UC03 (visualizar campanhas) e UC04 (criar campanha).
-  - **No computador:** `cd backend && docker compose up -d --build` e abra http://localhost:8000/docs
-    (ou rode com Python + SQLite, sem Docker — veja o [README do backend](backend/README.md#rodar-no-computador)).
-  - **Na nuvem:** hospedado numa EC2 do AWS Academy (Learner Lab), instalada pelo script
-    [`backend/deploy/aws/instalar.sh`](backend/deploy/aws/instalar.sh) — passo a passo em
-    [Publicar no AWS Academy](backend/README.md#publicar-no-aws-academy-learner-lab).
+
+**Como rodar**
+
+- **Tudo com Docker:** `cd backend && docker compose up -d --build` → site em http://localhost:3000
+  e API em http://localhost:8000/docs.
+- **Sem Docker:** suba a API pelo [README do backend](backend/README.md#rodar-no-computador) e o site
+  pelo [README do frontend](frontend/README.md#rodar-no-computador).
+- **Na nuvem (AWS Academy):** o script [`backend/deploy/aws/instalar.sh`](backend/deploy/aws/instalar.sh)
+  instala tudo numa EC2. O passo a passo está em [`backend/deploy/aws/README.md`](backend/deploy/aws/README.md).
 
 
 ## Diagrama de Classes
@@ -92,6 +98,15 @@ flowchart TB
     subgraph EC2["<<node>> Instância EC2 - Ubuntu 24.04 + Docker"]
 
     %% =========================
+    %% SERVIDOR WEB (SITE)
+    %% =========================
+
+    subgraph WebServer["<<container>> Servidor Web - nginx"]
+        Site["<<artifact>>\nSite React\n(HemoConnect)"]
+    end
+
+
+    %% =========================
     %% SERVIDOR DE APLICAÇÃO
     %% =========================
 
@@ -126,8 +141,10 @@ flowchart TB
     %% CONEXÕES
     %% =========================
 
-    DoadorApp -->|HTTP - porta 80| APIREST
-    RepresentanteApp -->|HTTP - porta 80| APIREST
+    DoadorApp -->|HTTP - porta 80| Site
+    RepresentanteApp -->|HTTP - porta 80| Site
+
+    Site -->|/api - proxy reverso| APIREST
 
     Backend -->|SQL| Database
 
@@ -144,11 +161,11 @@ flowchart TB
     classDef component fill:#eee8ff,stroke:#673ab7,stroke-width:1px,color:#111
 
     class Doador,Representante device
-    class AppServer server
+    class AppServer,WebServer server
     class MySQL database
     class AWS cloud
     class EC2 server
-    class DoadorApp,RepresentanteApp,Sistema,APIREST,Database artifact
+    class DoadorApp,RepresentanteApp,Sistema,APIREST,Database,Site artifact
     class Backend,API component
 ```
 

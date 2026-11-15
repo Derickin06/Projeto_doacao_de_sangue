@@ -1,10 +1,11 @@
-# MySQL + API em containers. Serve para rodar no computador e na EC2 da AWS.
+# MySQL + API + site (frontend) em containers. Serve para o computador e para a EC2 da AWS.
 #
-#   docker compose up -d --build        # sobe (em segundo plano)
+#   docker compose up -d --build        # sobe tudo (em segundo plano)
 #   docker compose logs -f api          # acompanha os logs da API
 #   docker compose down                 # para (os dados do MySQL continuam no volume)
 #
-# Senhas e porta vêm do arquivo .env desta pasta (veja .env.example).
+# Site: http://localhost:3000 (na AWS, porta 80) · API/Swagger: http://localhost:8000/docs
+# Senhas e portas vêm do arquivo .env desta pasta (veja .env.example).
 # Sem .env, usa os valores de desenvolvimento abaixo.
 services:
   db:
@@ -34,12 +35,21 @@ services:
       JWT_SECRET: ${JWT_SECRET:-chave-de-desenvolvimento-troque-em-producao}
       JWT_EXPIRA_MINUTOS: ${JWT_EXPIRA_MINUTOS:-720}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
-    # Na AWS o instalador usa API_PORT=80, para acessar sem ":8000" no endereço
+    # Acesso direto à API (Swagger). O site usa a API pelo próprio nginx, em /api.
     ports:
       - "${API_PORT:-8000}:8000"
     depends_on:
       db:
         condition: service_healthy
+
+  web:
+    build: ../frontend
+    restart: unless-stopped
+    # Na AWS o instalador usa WEB_PORT=80, para abrir o site sem porta no endereço
+    ports:
+      - "${WEB_PORT:-3000}:80"
+    depends_on:
+      - api
 
 volumes:
   mysql_dados:
