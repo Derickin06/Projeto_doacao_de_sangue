@@ -1,6 +1,6 @@
 // Cliente da API REST do backend (FastAPI).
 
-import type { Campanha } from './types';
+import type { Campanha, EstoqueItem, Hospital, HospitalAtualizar, Representante } from './types';
 
 const BASE = (import.meta.env.VITE_API_URL ?? '/api').replace(/\/$/, '');
 const CHAVE_TOKEN = 'hemoconnect.token';
@@ -79,4 +79,22 @@ export const api = {
     return request<Campanha[]>(`/campanhas${qs ? `?${qs}` : ''}`);
   },
   campanha: (id: number) => request<Campanha>(`/campanhas/${id}`),
+
+  // -------------------------------------------------- representante do hospital
+  login: async (email: string, senha: string) => {
+    const r = await request<{ access_token: string }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, senha }),
+    });
+    setToken(r.access_token);
+  },
+  logout: () => setToken(null),
+  eu: () => request<Representante>('/auth/me'),
+
+  // ------------------------------------------------- UC02: atualizar o hospital
+  meuHospital: () => request<Hospital>('/hospitais/me'),
+  atualizarHospital: (dados: HospitalAtualizar) =>
+    request<Hospital>('/hospitais/me', { method: 'PUT', body: JSON.stringify(dados) }),
+  atualizarEstoque: (itens: EstoqueItem[]) =>
+    request<Hospital>('/hospitais/me/estoque', { method: 'PUT', body: JSON.stringify(itens) }),
 };

@@ -3,7 +3,8 @@
 
 import { useSyncExternalStore } from 'react';
 
-function rotaAtual(): string {
+/** Caminho atual lido direto da barra de endereço. */
+export function rotaAtual(): string {
   const hash = window.location.hash.replace(/^#/, '');
   return hash.startsWith('/') ? hash : '/';
 }

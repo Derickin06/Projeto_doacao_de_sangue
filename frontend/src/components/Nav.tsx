@@ -1,3 +1,5 @@
+import { api } from '../api';
+import { useLogado } from '../auth';
 import { navegar } from '../router';
 
 interface Props {
@@ -10,7 +12,14 @@ const LINKS = [
 ];
 
 export default function Nav({ rota }: Props) {
+  const logado = useLogado();
+  const noPainel = rota.startsWith('/painel');
   const ativo = (caminho: string) => (caminho === '/' ? rota === '/' : rota.startsWith(caminho));
+
+  const sair = () => {
+    api.logout();
+    navegar('/');
+  };
 
   return (
     <header
@@ -20,7 +29,7 @@ export default function Nav({ rota }: Props) {
         borderBottom: '1px solid var(--border)',
       }}
     >
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+      <div className="nav-bar" style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         {/* Logo */}
         <button
           onClick={() => navegar('/')}
@@ -37,6 +46,7 @@ export default function Nav({ rota }: Props) {
           {LINKS.map((item) => (
             <button
               key={item.caminho}
+              className="nav-link"
               onClick={() => navegar(item.caminho)}
               style={{
                 background: ativo(item.caminho) ? 'var(--red-light)' : 'none',
@@ -55,6 +65,21 @@ export default function Nav({ rota }: Props) {
             </button>
           ))}
         </nav>
+
+        {/* Acesso do hospital */}
+        {noPainel && logado ? (
+          <button onClick={sair} className="btn-secondary nav-cta" style={{ padding: '8px 18px', fontSize: 13, whiteSpace: 'nowrap' }}>
+            ← Sair<span className="hide-mobile"> do painel</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => navegar(logado ? '/painel' : '/login')}
+            className="btn-primary nav-cta"
+            style={{ padding: '8px 18px', fontSize: 13, whiteSpace: 'nowrap' }}
+          >
+            {logado ? 'Meu painel' : <><span className="hide-mobile">Acesso do </span>Hospital</>}
+          </button>
+        )}
       </div>
     </header>
   );

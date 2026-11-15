@@ -152,5 +152,8 @@ select.input-field {
 }
 @media (max-width: 480px) {
   .grid-4 { grid-template-columns: 1fr; }
+  .nav-bar { padding: 0 12px !important; gap: 6px !important; }
+  .nav-link { padding: 7px 8px !important; }
+  .nav-cta { padding: 8px 12px !important; }
   .stack-mobile { flex-direction: column !important; align-items: stretch !important; }
 }

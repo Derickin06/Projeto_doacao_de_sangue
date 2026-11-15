@@ -15,3 +15,42 @@ export interface Campanha {
   hospital_nome: string;
   ativa: boolean;
 }
+
+export interface EstoqueTipo {
+  tipo_sanguineo: string;
+  quantidade: number; // bolsas disponíveis
+  quantidade_minima: number; // estoque ideal
+  necessidade: number; // quanto falta para o mínimo
+}
+
+export interface Hospital {
+  id: number;
+  nome: string;
+  endereco: string;
+  telefone: string | null;
+  horario_funcionamento: string | null;
+  observacoes: string | null; // exceções de funcionamento e avisos
+  tipos_em_falta: string[];
+  estoque: EstoqueTipo[];
+}
+
+export interface Representante {
+  id: number;
+  nome: string;
+  email: string;
+  hospital: Hospital | null;
+}
+
+export interface HospitalAtualizar {
+  nome?: string;
+  endereco?: string;
+  telefone?: string | null;
+  horario_funcionamento?: string | null;
+  observacoes?: string | null;
+}
+
+export interface EstoqueItem {
+  tipo_sanguineo: string;
+  quantidade: number;
+  quantidade_minima: number;
+}
